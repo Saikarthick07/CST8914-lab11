@@ -9,22 +9,47 @@
   6. If the accordion is closed we set the max-height of the currently hidden text inside the accordion from 0 to the scroll height of the content inside the accordion. The scroll height refers to the height of an html element in pixels. For this specific example, we are talking about the height of the div with the class accordion-content with all of its nested ptags
 */
 
-const accordionBtns = document.querySelectorAll(".accordion");
-
-accordionBtns.forEach((accordion) => {
-  accordion.onclick = function () {
-    this.classList.toggle("is-open");
-
-    let content = this.nextElementSibling;
-    console.log(content);
-
-    if (content.style.maxHeight) {
-      //this is if the accordion is open
-      content.style.maxHeight = null;
-    } else {
-      //if the accordion is currently closed
-      content.style.maxHeight = content.scrollHeight + "px";
-      console.log(content.style.maxHeight);
-    }
-  };
+document.addEventListener('DOMContentLoaded', function() {
+    const accordions = document.querySelectorAll('.accordion');
+    
+    accordions.forEach(accordion => {
+        accordion.addEventListener('click', function() {
+            const content = this.nextElementSibling;
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            
+            this.setAttribute('aria-expanded', !isExpanded);
+            content.style.display = isExpanded ? 'none' : 'block';
+        });
+        
+        accordion.addEventListener('keydown', function(e) {
+            // Enter or Space key
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+            
+            // Arrow key navigation
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const nextAccordion = this.nextElementSibling.nextElementSibling;
+                if (nextAccordion) nextAccordion.focus();
+            }
+            
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prevAccordion = this.previousElementSibling.previousElementSibling;
+                if (prevAccordion) prevAccordion.focus();
+            }
+            
+            if (e.key === 'Home') {
+                e.preventDefault();
+                accordions[0].focus();
+            }
+            
+            if (e.key === 'End') {
+                e.preventDefault();
+                accordions[accordions.length - 1].focus();
+            }
+        });
+    });
 });
